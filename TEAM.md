@@ -15,7 +15,7 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; bàn 3 người th
 | --: | --------- | ---- | --- | :---------: |
 |   1 | Đào Lê Bảo Minh | 2A202604010 |  | ✅ |
 |   2 | Nguyễn Đức Hải | 2A202603943 | Kỹ sư cổng (vòng 2) |  |
-|   3 | Trần Phú Thái | 2A202604001 |  |  |
+|   3 | Trần Phú Thái | 2A202604001 | Kỹ sư cổng (vòng 1) |  |
 |   4 | Vũ Quang Hải | 2A202603935 | Vận hành và pháp lý |  |
 
 Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, khớp bảng trên.
@@ -23,6 +23,41 @@ Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, k
 ## Cá nhân
 
 Mỗi thành viên tự viết một mục bên dưới (chép mẫu, đổi tiêu đề thành họ tên không dấu và MSSV, ví dụ `## NguyenVanAn-20241234`).
+
+## TranPhuThai-2A202604001
+
+### Phần việc phụ trách
+
+Vai **Kỹ sư cổng (vòng 1)**. CP3 (khối 2): câu 2.1–2.10, Phiếu B mục B0–B8, `lab10/guards.py` (cổng vòng 1),
+`config/operating_gates.json`, chốt vòng 1 bằng lệnh 5, quyết định v1.
+
+### Đóng góp cụ thể
+
+- Chạy mốc base và đọc số: chỉ hỏng `T-002@55`, nhưng ca này làm trượt 2 chỉ số an toàn (hoàn sai 20.000đ, 1 lỗi hãng oan cho VNX);
+  dò trace và điền bảng soát lỗi (lỗi chìm, nguồn: đầu vào).
+- Code 3 cổng phòng ngừa trong `write_gate` + ghim chính sách theo ngày trong `pre_guard`:
+  (1) `issue_refund` tính lại quyền lợi từ tracking DB + chính sách hiệu lực, kiểm phê duyệt đúng đơn / còn hạn / đúng người duyệt,
+  chặn `fail_open`, chặn bắt shop trả, chặn hoàn lần hai; (2) `file_carrier_fault` chỉ ghi khi DB có nguyên nhân lỗi hãng, đúng kiện,
+  đúng số ngày trễ; (3) `notify_carrier` chỉ gửi trường trong `carrier_notice_fields`.
+- Điền `operating_gates.json` (trần hoàn 1.500.000đ/ngày, ngân sách LLM 1.500đ/ticket, PIC NV-TUNG, người duyệt NV-HANH,
+  6 ca/giờ, chờ tối đa 60 phút, ghi chú giải thích + kiểm mẫu 10%, hai cổng pháp lý); viết runbook 1–3 và giờ cao điểm khớp các số đó.
+- Viết 2 ticket hiểm (behavioral test, B7.3): khai khống 12 ngày trên O-1004 và đơn quà O-1026 — lọt ở base, bị chặn ở after.
+- Chốt vòng 1 và ra quyết định v1 **Thu hẹp** (điều kiện Tiếp tục còn thiếu vế "trên gói sự cố").
+
+### Bằng chứng
+
+- Commit `3bde73a` *LAB 10: chốt cổng vòng 1, quyết định v1* (`lab10/guards.py`, `lab10/guards_round1.py`,
+  `config/operating_gates.json`, `config/operating_gates.round1.json`, `config/round1.lock`, Phiếu B).
+- Hash chốt vòng 1 `d8b5a526`.
+- Lần chạy: base `R-base-before-20261119-155331-b45eeb` (pass_rate 0,9909) → after `R-base-after-20261119-155528-26eaa3`
+  → prepared `R-base-prepared-20261119-160756-26eaa3` (pass_rate 1,0, ba chỉ số an toàn = 0, không ca mới hỏng).
+- Phiếu B mục B0, B7.1, B8.
+
+### Exit ticket
+
+- Học được: cổng đặt **ngoài model** và chỉ tin nguồn sự thật (tracking DB, chính sách theo ngày) sửa được lỗi chìm mà không cần
+  đụng vào model; cổng vòng 1 viết trước khi biết sự cố đã đỡ được toàn bộ 30 lần lộ dữ liệu của thẻ S7.
+- Còn chưa chắc: cổng 2 sửa về "kiện trễ nhất" cho đơn nhiều kiện chưa được thử trên đơn mà kiện trễ không phải kiện đầu.
 
 ## NguyenDucHai-2A202603943
 
