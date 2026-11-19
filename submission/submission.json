@@ -1,12 +1,17 @@
 {
-  "team": "",
-  "members": [],
-  "incident": "",
-  "decision_v1": "",
-  "decision_v2": "",
+  "team": "K5-L3B-DAY10-HummingBirb-PoCtoPilotGate1",
+  "members": [
+    "DaoLeBaoMinh-2A202604010",
+    "NguyenDucHai-2A202603943",
+    "TranPhuThai-2A202604001",
+    "VuQuangHai-2A202603935"
+  ],
+  "incident": "S7",
+  "decision_v1": "Thu hẹp",
+  "decision_v2": "Tiếp tục",
   "three_lines": {
-    "environment_assumption": "",
-    "reduce_or_prevent": "",
-    "measure_in_pilot": ""
+    "environment_assumption": "Thiết kế dựa vào giả định hợp đồng với hãng chỉ cho nhận đúng 4 trường (mã đơn, mã kiện, quận/huyện, số ngày trễ) và tracking DB ghi đúng các trường đó; nếu DB nhập sai (ví dụ địa chỉ đầy đủ nằm trong cột quận/huyện) hoặc hợp đồng mới thêm trường liên hệ, thông tin người nhận vẫn tới hãng dù cổng chạy đúng spec.",
+    "reduce_or_prevent": "Với kênh notify_carrier, cổng NGĂN: nó dựng lại thông báo hãng chỉ từ DB theo carrier_notice_fields và không đọc chữ khách, nên lộ dữ liệu trên thẻ S7 giảm 30 → 0 (prepared và after) mà không phụ thuộc cách viết SĐT; còn monitor carrier_notice_contact_rate (0 trên bộ nền, 0,75 trên thẻ) và điều kiện dừng chỉ GIẢM, vì chúng phát hiện chứ không chặn, và không thấy liên hệ nằm trong trường được phép.",
+    "measure_in_pilot": "Trong pilot thật cần đo lại: carrier_notice_contact_rate và số khiếu nại lộ dữ liệu theo ngày trên lưu lượng thật (mock chỉ có 8 ticket thẻ, 22 ticket nền); tỉ lệ chuyển người và thời gian chờ khi lượng ticket gấp 3 với 1 người trực; và toàn bộ bộ nền chạy trên REFUND-v4 từ 01/12/2026 (hạn mức 100.000đ, bất khả kháng không ghi lỗi hãng) trước Bước đánh giá 2."
   }
 }
