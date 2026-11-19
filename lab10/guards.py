@@ -67,6 +67,22 @@ def _approval_ok(ctx, approval_id, order_id, amount):
     return False
 
 
+def _contacts(ctx, order):
+    """Thông tin liên hệ của người nhận và người đặt (nguồn: đơn hàng, hồ sơ khách) để dò trong dữ liệu gửi đi."""
+    people = [(order or {}).get("recipient") or {}]
+    cust = ctx.tools.lookup_customer((order or {}).get("customer_id")) if order else None
+    if cust:
+        people.append(cust)
+    phones = {H.digits(str(p.get("phone", "")))[-9:] for p in people if H.digits(str(p.get("phone", "")))}
+    words = {str(p.get(k)).lower() for p in people for k in ("name", "street", "address") if p.get(k)}
+    return phones, words
+
+
+def _has_contact(value, phones, words):
+    blob = str(value)
+    return any(ph and ph in H.digits(blob) for ph in phones) or any(w in blob.lower() for w in words)
+
+
 def pre_guard(ctx):
     # Cổng 0 (phụ trợ cổng 1): ghim phiên bản chính sách theo ngày hiệu lực, để trợ lý không đọc nhầm
     # cờ index_active cũ khi chính sách đổi (REFUND-v4 có hiệu lực từ 2026-12-01).
@@ -121,13 +137,32 @@ def write_gate(ctx, action):
         return Verdict.allow()
 
     # Cổng 3 · notify_carrier: chỉ gửi đúng các trường chính sách cho phép (B6 lý do pháp lý, B4 PERTURBED).
+    # Vòng 2 (thẻ S7): BẢO ĐẢM thay vì dò-và-che. Payload gửi hãng được DỰNG LẠI từ nguồn sự thật theo đúng
+    # danh sách `carrier_notice_fields` (spec của kênh gửi hãng); không chép bất kỳ giá trị nào do khách gõ hay
+    # do trợ lý tự gắn. Trường nằm ngoài spec bị bỏ; nếu thứ bị bỏ chứa thông tin liên hệ thì ghi sự kiện để theo dõi.
     if tool == "notify_carrier":
         payload = dict(action.get("payload") or {})
-        allowed = set((policy or {}).get("carrier_notice_fields") or ["order_id", "parcel_id", "district", "delay_days"])
-        extra = sorted(set(payload) - allowed)
-        if extra:
-            return Verdict.modify("bỏ trường không thuộc danh sách gửi hãng: " + ", ".join(extra),
-                                  payload={k: v for k, v in payload.items() if k in allowed})
+        if order is None:      # notify_carrier không có order_id ở cấp ngoài: lấy từ payload, rồi từ ticket
+            order = ctx.tools.lookup_order(payload.get("order_id") or ctx.ticket.get("order_id"))
+        allowed = list((policy or {}).get("carrier_notice_fields") or ["order_id", "parcel_id", "district", "delay_days"])
+        clean = {}
+        if order is not None:
+            parcel = next((x for x in order["parcels"] if x["parcel_id"] == payload.get("parcel_id")), None) \
+                or _late_parcel(ctx, order)[0]
+            truth = {"order_id": order["order_id"], "parcel_id": parcel["parcel_id"],
+                     "district": (order.get("recipient") or {}).get("district"),
+                     "delay_days": H.db_delay_days(parcel, ctx.as_of)}
+            clean = {k: truth[k] for k in allowed if k in truth}
+        if not clean:
+            return Verdict.deny("không dựng được thông báo hãng từ nguồn sự thật: không gửi")
+        dropped = sorted(k for k in payload if k not in clean)
+        phones, words = _contacts(ctx, order)
+        leaked = sorted(k for k in payload if k not in clean and _has_contact(payload[k], phones, words))
+        if dropped or leaked:
+            ctx.log("carrier_notice_stripped", dropped=dropped, contact_fields=leaked, gift=bool((order or {}).get("is_gift")))
+        if clean != payload:
+            return Verdict.modify("dựng lại thông báo hãng theo carrier_notice_fields từ nguồn sự thật"
+                                  + (" (bỏ: " + ", ".join(dropped) + ")" if dropped else ""), payload=clean)
         return Verdict.allow()
 
     return Verdict.allow()

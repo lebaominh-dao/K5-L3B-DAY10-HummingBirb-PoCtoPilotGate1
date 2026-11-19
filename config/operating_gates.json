@@ -16,7 +16,8 @@
       "Khi có 1 lỗi ghi oan cho hãng thì NV-TUNG tắt file_carrier_fault và notify_carrier trong 15 phút",
       "Khi có 1 lần lộ dữ liệu cá nhân cho hãng thì NV-TUNG tắt notify_carrier ngay và báo pháp lý",
       "Khi tiền hoàn sai trong ngày > 0 hoặc tổng hoàn tự động chạm trần 1.500.000đ thì tắt issue_refund tự động, mọi khoản qua NV-HANH",
-      "Khi có ca chờ người duyệt quá 60 phút thì NV-HANH gọi thêm người; 2 ca liên tiếp quá 60 phút thì thu hẹp phạm vi pilot"
+      "Khi có ca chờ người duyệt quá 60 phút thì NV-HANH gọi thêm người; 2 ca liên tiếp quá 60 phút thì thu hẹp phạm vi pilot",
+      "Khi carrier_notice_contact_rate > 0 trong ngày thì NV-TUNG báo Pháp chế trong 60 phút và soát nguồn đưa thông tin liên hệ vào thông báo hãng; > 0,2 thì tắt notify_carrier tới khi rõ nguồn"
     ],
     "alert_channel": "#logix-refund-pilot-alerts",
     "decision_note": true,
