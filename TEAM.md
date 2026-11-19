@@ -13,7 +13,7 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; bàn 3 người th
 
 | STT | Họ và tên | MSSV | Vai | Trưởng nhóm |
 | --: | --------- | ---- | --- | :---------: |
-|   1 | Đào Lê Bảo Minh | 2A202604010 |  | ✅ |
+|   1 | Đào Lê Bảo Minh | 2A202604010 | Sản phẩm và kinh doanh | ✅ |
 |   2 | Nguyễn Đức Hải | 2A202603943 | Kỹ sư cổng (vòng 2) |  |
 |   3 | Trần Phú Thái | 2A202604001 | Kỹ sư cổng (vòng 1) |  |
 |   4 | Vũ Quang Hải | 2A202603935 | Vận hành và pháp lý |  |
@@ -23,6 +23,36 @@ Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, k
 ## Cá nhân
 
 Mỗi thành viên tự viết một mục bên dưới (chép mẫu, đổi tiêu đề thành họ tên không dấu và MSSV, ví dụ `## NguyenVanAn-20241234`).
+
+## DaoLeBaoMinh-2A202604010
+
+### Phần việc phụ trách
+
+Trưởng nhóm · vai **Sản phẩm và kinh doanh**. CP1 (tạo repo, cấu hình) và CP2 (khối 1): câu 1.1–1.6, Phiếu A mục A1–A5,
+`config/acceptance_criteria.json` (ký bằng lệnh 1).
+
+### Đóng góp cụ thể
+
+- Tạo repo của bàn `K5-L3B-DAY10-HummingBirb-PoCtoPilotGate1` (commit đầu `27d9acb`).
+- Viết Bản tiêu chí **trước khi chạy đánh giá lần nào**: 5 ngưỡng bắt buộc (`pass_rate_min` 0,9 · `pass_k_min` 0,85 · ba chỉ số an
+  toàn = 0), `escalation_rate_max` 0,25, nhóm `business_ops` (`cost_per_ticket_vnd_max` 7.000đ · `roi_min` 0,3 · `queue_stuck_max` 0),
+  `stop_condition` và bốn dòng `decision_rule`; mỗi con số có lý do lấy từ `data/world.json` → `ops_facts` (Phiếu A mục A4).
+- Phiếu A: mục tiêu cấp hệ thống, mục tiêu theo chị Oanh / chị Hạnh, thước đo offline cho bước ghi lỗi hãng và telemetry production,
+  đọc khoảng tin cậy (câu 1.5: chọn (b)), câu tiêu chí "Nếu … thì chúng tôi sẽ …", hai câu ranh giới đầu ra, bốn câu soát.
+- Ký và đẩy tiêu chí đúng thứ tự luật lab.
+
+### Bằng chứng
+
+- Commit `cceaee0` *Sign acceptance criteria* (15:52:07) và `48577b4` *Phiếu A: điền A1–A5*.
+- Hash tiêu chí `0ba0c7f7…`, ký lúc `2026-11-19T15:52:02` (`config/acceptance_criteria.lock`); lần đánh giá đầu tiên 15:53:31
+  (`submission/runs/journal.jsonl`), tức là ký và commit **trước** khi đo; lệnh 7 xác nhận tiêu chí giữ nguyên từ commit ký.
+- Phiếu A mục A4 (bảng câu tiêu chí), mục A5 (giờ ký, mã commit).
+
+### Exit ticket
+
+- Học được: viết ngưỡng **trước** khi xem số buộc bàn nghĩ "nếu trượt thì làm gì"; và `pass^k` (đúng cả 5/5 lần) bắt được trợ lý
+  "lúc đúng lúc sai" mà `pass_rate` che mất.
+- Còn chưa chắc: ngưỡng 0,9 / 0,85 trên 22 ticket × 5 seed có đủ chặt cho lưu lượng thật không, vì khoảng tin cậy của mẫu nhỏ còn rộng.
 
 ## TranPhuThai-2A202604001
 
