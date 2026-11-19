@@ -14,7 +14,7 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; bàn 3 người th
 | STT | Họ và tên | MSSV | Vai | Trưởng nhóm |
 | --: | --------- | ---- | --- | :---------: |
 |   1 | Đào Lê Bảo Minh | 2A202604010 |  | ✅ |
-|   2 | Nguyễn Đức Hải | 2A202603943 |  |  |
+|   2 | Nguyễn Đức Hải | 2A202603943 | Kỹ sư cổng (vòng 2) |  |
 |   3 | Trần Phú Thái | 2A202604001 |  |  |
 |   4 | Vũ Quang Hải | 2A202603935 | Vận hành và pháp lý |  |
 
@@ -23,6 +23,42 @@ Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, k
 ## Cá nhân
 
 Mỗi thành viên tự viết một mục bên dưới (chép mẫu, đổi tiêu đề thành họ tên không dấu và MSSV, ví dụ `## NguyenVanAn-20241234`).
+
+## NguyenDucHai-2A202603943
+
+### Phần việc phụ trách
+
+Vai **Kỹ sư cổng (vòng 2)**. CP4 (khối 3) với thẻ **S7**: nhận thẻ, câu 3.0–3.7, Phiếu C mục C0–C11, sửa `lab10/guards.py`,
+thêm chỉ số trong `lab10/monitors.py`, chạy lệnh 6.
+
+### Đóng góp cụ thể
+
+- Nhận thẻ S7 vào `incidents/S7/`, chạy lệnh 6 **trước khi sửa**: cổng vòng 1 đã đưa lộ dữ liệu trên thẻ từ 30 → 0, chỉ còn ô
+  `6 monitor` đỏ.
+- Dò trace hai kiểu lỗi khác nguồn: chữ khách gõ bị chép sang hãng (`S7-01@11`) và đơn quà tự gắn liên hệ người nhận dù khách không
+  gõ gì (`S7-20@11`); đối chứng `S7-05` (mã vận đơn không phải SĐT).
+- Sửa cổng `notify_carrier` từ "lọc khoá" thành **dựng lại thông báo hãng từ nguồn sự thật** theo `carrier_notice_fields` (bảo đảm,
+  không dò-và-che), ghi sự kiện `carrier_notice_stripped`.
+- Thêm chỉ số `carrier_notice_contact_rate` (không cần nhãn) và điều kiện dừng tương ứng trong `operations.stop_conditions`.
+- Phát hiện và sửa một regression của chính bản sửa (lệnh `notify_carrier` không mang `order_id` → bộ nền rơi về 0,5), ghi trung thực
+  vào C0.
+- Phiếu C: bảng soát lỗi, hiệu chỉnh lòng tin C3.3, HAZOP của thẻ, spec và giả định môi trường, fault tree trước/sau, bảng sửa,
+  risk register, checklist và runbook 4–5.
+
+### Bằng chứng
+
+- Commit `5e4e2a7` *Nhận thẻ S7* và `1834350` *LAB 10: S7 · cổng notify_carrier …*.
+- Lần chạy: grade trước khi sửa `R-S7-grade-20261119-161609-26eaa3`; lần sửa lỗi `R-S7-after-20261119-161706-dba546` /
+  `R-base-after-20261119-161706-dba546` (regression); bản cuối `R-S7-after-20261119-161801-cc3998`, bộ nền
+  `R-base-after-20261119-161801-cc3998`; grade `R-S7-grade-20261119-161802-cc3998`: `1 integrity ✅ · 3 visible ✅ ·
+  5 regression ✅ · 6 monitor ✅` (chỉ số mới 0 trên bộ nền, 0,75 trên thẻ).
+- Phiếu C mục C0, C2, C7, C8.
+
+### Exit ticket
+
+- Học được: "chỉ cho đi những trường đã liệt kê" là **ngăn**, còn "dò mẫu SĐT rồi che" chỉ là **giảm** (viết "0987 654 321" là lọt,
+  mã vận đơn thì bị che nhầm); và phải chạy lại bộ nền sau mỗi lần sửa vì chính bản sửa cũng có thể gây hỏng.
+- Còn chưa chắc: cổng và chỉ số chưa thấy trường hợp thông tin liên hệ nằm sẵn trong một trường được phép (ví dụ `district` nhập sai).
 
 ## VuQuangHai-2A202603935
 
